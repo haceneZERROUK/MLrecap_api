@@ -4,7 +4,7 @@ import random
 from datetime import date, datetime, timedelta
 from app.utils import bcrypt_context
 from app.database import engine
-from app.modeles import Users, Film, Prediction, Salle
+from app.modeles import User, Film, Prediction
 
 def populate_db():
     """
@@ -32,7 +32,7 @@ def populate_db():
     with Session(engine) as session:
 
         # Ajouter un utilisateur admin
-        admin_user = Users(
+        admin_user = User(
             nom="Admin",
             email="admin@cinema.fr",
             hashed_password=bcrypt_context.hash("admin"),  # Mot de passe hashé
@@ -42,7 +42,7 @@ def populate_db():
         session.add(admin_user)
 
         # Ajouter un utilisateur gérant
-        manager_user = Users(
+        manager_user = User(
             nom="Gérant",
             email="gerant@cinema.fr",
             hashed_password=bcrypt_context.hash("gerant"),  # Mot de passe hashé
@@ -53,7 +53,7 @@ def populate_db():
 
         # Générer des utilisateurs fictifs
         for _ in range(3):
-            user = Users(
+            user = User(
                 nom=fake.name(),
                 email=fake.unique.email(),
                 hashed_password=bcrypt_context.hash(fake.password(length=12)),
@@ -62,21 +62,6 @@ def populate_db():
             )
             session.add(user)
 
-        # Créer les salles du cinéma
-        salle1 = Salle(
-            id=1,
-            nom="Grande Salle",
-            capacite=120
-        )
-
-        salle2 = Salle(
-            id=2,
-            nom="Petite Salle",
-            capacite=80
-        )
-
-        session.add(salle1)
-        session.add(salle2)
 
         # Liste de genres de films
         genres = ["Action", "Comédie", "Drame", "Science-Fiction", "Horreur",

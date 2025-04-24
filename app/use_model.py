@@ -215,8 +215,6 @@ def use_model():
     # movies_list = df_2.sort_values(by = 'prediction', ascending=False).head(10).to_dict()
     movies_list = df_2.sort_values(by='prediction', ascending=False).head(10).to_dict(orient='records')
 
-    print(movies_list)
     # return movies_list
     return {"movies": movies_list}
-use_model()
   
