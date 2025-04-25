@@ -1,56 +1,37 @@
+import pickle
 import pandas as pd
 import numpy as np
-from catboost import CatBoostRegressor, cv, Pool
-import pickle
-import sklearn
-import json
-import os
-from dotenv import load_dotenv
-import pyodbc
-
-# Charger les variables d'environnement depuis le fichier .env
-load_dotenv()
-
-server = os.getenv('DB_SERVER')
-database = os.getenv('DB_DATABASE')
-username = os.getenv('DB_USERNAME')
-password = os.getenv('DB_PASSWORD')
-driver = os.getenv('DB_DRIVER')
-
-conn_str = (
-    f'DRIVER={driver};'
-    f'SERVER={server};'
-    f'PORT=1433;'
-    f'DATABASE={database};'
-    f'UID={username};'
-    f'PWD={password};'
-    'Encrypt=yes;'
-    'TrustServerCertificate=no;'
-    'Connection Timeout=30;'
-)
-
-try:
-    # Connexion à la base de données
-    conn = pyodbc.connect(conn_str)
-    print("Connexion réussie à la base SQL Azure")
-
-    # Lire la table 'movies' directement dans un DataFrame pandas
-    query = "SELECT * FROM movies"
-    df = pd.read_sql_query(query, conn)
+from typing import Union, Dict, Any, List
+from datetime import datetime
+from pathlib import Path
 
 
-except Exception as e:
-    print("Erreur de connexion :", e)
 
-# Charger les données JSON dans un DataFrame
-df_prediction = pd.read_json('app/new_film.json')
-df_2 = df_prediction.copy()  # Si tu as besoin d'une copie distincte
-# Groupement des acteurs 1, 2, 3 , scénaristes, réalisateurs, et distributeurs qui font plus de 500k entrées
-# + ajout d'un groupe "mid" entre 250k et 500k
+def use_model(new_movies : list[dict]) :
+    
+    # conn_str = (
+    # f'DRIVER={driver};'
+    # f'SERVER={server};'
+    # f'PORT=1433;'
+    # f'DATABASE={database};'
+    # f'UID={username};'
+    # f'PWD={password};'
+    # 'Encrypt=yes;'
+    # 'TrustServerCertificate=no;'
+    # 'Connection Timeout=30;')
 
-def use_model():
-   
-# Acteur 1
+    # try:
+    #     conn = pyodbc.connect(conn_str)
+    #     print("Connexion réussie à la base SQL Azure")
+
+    #     query = "SELECT * FROM movies"
+    #     df = pd.read_sql_query(query, conn)
+    # except : 
+
+    df = pd.read_json("app/DATASET_FINAL.json")
+    df_prediction = pd.DataFrame.from_records(new_movies)
+    df_2 = df_prediction.copy()
+    # Acteur 1
     df_actor_1 = df.groupby('actor_1')['weekly_entrances'].mean().reset_index()
     df_actor_1_mid = df_actor_1[(df_actor_1['weekly_entrances'] < 500001) & (df_actor_1['weekly_entrances'] > 250000)].sort_values(by='weekly_entrances', ascending=False)
     df_actor_1 = df_actor_1[df_actor_1['weekly_entrances'] > 500000].sort_values(by='weekly_entrances', ascending=False)
@@ -130,9 +111,6 @@ def use_model():
 
     df_prediction["is_award_season"] = df_prediction["released_date"].apply(lambda x: 1 if (x.month == 2 or (x.month == 3 and x.day <= 10)) else 0)
 
-
-    #Selection des features du df_prediciton pour la prediction
-
     features_of_interest = [
         'released_year',
         "country",
@@ -155,18 +133,11 @@ def use_model():
         'post_streaming',
         'summer_holidays',
         'christmas_period',
-        'is_award_season',
-
-    ]
-
+        'is_award_season',]
 
     numerical_column = [
-
         'released_year',
-        "duration_minutes",
-
-    ]
-
+        "duration_minutes",]
 
     ordinal_column = [
         "top_actor_1",
@@ -185,36 +156,22 @@ def use_model():
         'post_streaming',
         'summer_holidays',
         'christmas_period',
-        'is_award_season',
-    ]
+        'is_award_season',]
 
     categorical_column = [
         "country",
         'category',
-        'classification',
-
-    ]
-
+        'classification',]
 
     data, numerical_data,categorical_data = (
         df_prediction[features_of_interest],
         df_prediction[numerical_column],
-        df_prediction[categorical_column]
-    )
+        df_prediction[categorical_column])
 
     with open("app/catboostmodel.pkl", "rb") as f:
         modele = pickle.load(f)
 
-
     result = np.round(modele.predict(data),0)
-
-
     df_2['prediction'] = result
-
-    # df_prediction.sort_values(by = 'prediction', ascending=False).head(10).to_json('top_movies.json')
-    # movies_list = df_2.sort_values(by = 'prediction', ascending=False).head(10).to_dict()
     movies_list = df_2.sort_values(by='prediction', ascending=False).head(10).to_dict(orient='records')
-
-    # return movies_list
-    return {"movies": movies_list}
-  
+    return movies_list

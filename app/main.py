@@ -44,9 +44,9 @@ app.add_middleware(
 )
 
 # Inclure les routes
-app.include_router(route_prediction.router, prefix="/api/v1/predictions", tags=["Prédictions"])
-app.include_router(route_admin.router, prefix="/api/v1/admin", tags=["Administration"])
-app.include_router(route_auth.router, prefix="/api/v1/auth", tags=["Authentification"])
+app.include_router(route_auth.router, prefix="/auth", tags=["Authentification"])
+app.include_router(route_prediction.router, prefix="/predictions", tags=["Prédictions"])
+app.include_router(route_admin.router, prefix="/admin", tags=["Administration"])
 
 # Route racine
 @app.get("/")
@@ -55,8 +55,8 @@ async def root():
         "message": "Bienvenue sur l'API de prédiction de popularité des films",
         "documentation": "/docs",
         "routes": {
-            "prédictions": "/api/v1/predictions",
-            "administration": "/api/v1/admin",
-            "authentification": "/api/v1/auth"
+            "prédictions": "/predictions",
+            "administration": "/admin",
+            "authentification": "/auth"
         }
     }
