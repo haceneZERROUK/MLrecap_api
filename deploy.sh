@@ -51,7 +51,7 @@ az container create \
     --cpu 1 \
     --memory 3.5 \
     --ip-address public \
-    --ports 8000 \
+    --ports 8086 \
     --environment-variables SECRET_KEY=$SECRET_KEY DATABASE_URL=$DATABASE_URL ACCESS_TOKEN_EXPIRE_MINUTES=$ACCESS_TOKEN_EXPIRE_MINUTES ALGORITHM=$ALGORITHM MODEL_PATH=$MODEL_PATH \
     --registry-login-server $ACR_NAME.azurecr.io \
     --registry-username $REGISTRY_USERNAME \
@@ -61,4 +61,4 @@ az container create \
 
 # 9. Afficher l'URL du conteneur
 CONTAINER_IP=$(az container show --resource-group $RESOURCE_GROUP --name $CONTAINER_NAME --query "ipAddress.ip" -o tsv)
-echo "Le conteneur est déployé. Vous pouvez y accéder à l'adresse suivante : http://$CONTAINER_IP:8000"
+echo "Le conteneur est déployé. Vous pouvez y accéder à l'adresse suivante : http://$CONTAINER_IP:8086"

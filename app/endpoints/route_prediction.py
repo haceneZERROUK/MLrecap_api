@@ -11,7 +11,7 @@ from app.utils import get_current_user
 router = APIRouter()
 
 
-@router.post("/predictions")
+@router.post("/")
 def get_predictions(data: list[dict],current_user: Annotated[str, Depends(get_current_user)]):
     return use_model(data)
 

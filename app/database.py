@@ -14,7 +14,7 @@ Attributes:
     engine: Instance du moteur SQLAlchemy pour la connexion à la base de données
 """
 
-load_dotenv(dotenv_path="./app/.env")
+load_dotenv(dotenv_path=".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./api_users.db")  # Par défaut SQLite si non défini
 

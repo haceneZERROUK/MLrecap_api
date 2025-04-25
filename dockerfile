@@ -58,7 +58,7 @@ COPY . .
 USER appuser
 
 # Exposer le port utilisé par l'app
-EXPOSE 8000
+EXPOSE 8086
 
 # Démarrer l'application
-CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8000", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8086", "--reload"]
