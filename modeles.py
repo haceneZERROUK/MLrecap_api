@@ -11,3 +11,4 @@ class Users(SQLModel, table=True):      # la banque
     email: str = Field(sa_column=Column(String(255), unique=True))
     hashed_password: str = Field(sa_column=Column(String(255)))
     is_admin: bool = Field(default=0)
+

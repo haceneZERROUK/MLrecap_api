@@ -9,25 +9,6 @@ from pathlib import Path
 
 def use_model(new_movies : list[dict]) :
     
-    # conn_str = (
-    # f'DRIVER={driver};'
-    # f'SERVER={server};'
-    # f'PORT=1433;'
-    # f'DATABASE={database};'
-    # f'UID={username};'
-    # f'PWD={password};'
-    # 'Encrypt=yes;'
-    # 'TrustServerCertificate=no;'
-    # 'Connection Timeout=30;')
-
-    # try:
-    #     conn = pyodbc.connect(conn_str)
-    #     print("Connexion réussie à la base SQL Azure")
-
-    #     query = "SELECT * FROM movies"
-    #     df = pd.read_sql_query(query, conn)
-    # except : 
-
     df = pd.read_json("app/DATASET_FINAL.json")
     df_prediction = pd.DataFrame.from_records(new_movies)
     df_2 = df_prediction.copy()
