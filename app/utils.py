@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from passlib.context import CryptContext
 from app.database import Session, db_connection
 from jose import JWTError, jwt
@@ -16,13 +16,15 @@ from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter(prefix="/auth", tags=["auth"])   # pour les routes d'authentification
 
-load_dotenv(dotenv_path="./app/.env")   # charger les variables d'environnement
+dot_env_path = find_dotenv()
+load_dotenv(dotenv_path=dot_env_path, override=True)
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM","HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15))
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto") # pour hasher le mot de passe 
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login")  # pour obtenir le token d'accès à l'API  
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl="login")  # pour obtenir le token d'accès à l'API  
 
 
 db_dependency = Annotated[Session, Depends(db_connection)]   # dépendance pour la connexion à la BDD
@@ -86,7 +88,7 @@ def authenticate_user(email : str, password : str, db : db_dependency) -> Users 
     Note:
         Vérifie le hash du mot de passe avec bcrypt
     """
-    user = db.query(Users).filter(Users.email == email).first()
+    user = db.query(Users).filter((Users.email == identifier) | (Users.username == identifier)).first()
     if not user : 
         return False
     if not bcrypt_context.verify(password, user.hashed_password) : 

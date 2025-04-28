@@ -1,6 +1,5 @@
-# syntax=docker/dockerfile:1
-ARG PYTHON_VERSION=3.12.3
-FROM python:${PYTHON_VERSION}-slim as base
+FROM python:3.11-slim
+
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -60,5 +59,6 @@ USER appuser
 # Exposer le port utilisé par l'app
 EXPOSE 8086
 
-# Démarrer l'application
-CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8086", "--reload"]
+# CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8086", "--reload"]
+ENTRYPOINT ["./entrypoint.sh"]
+
