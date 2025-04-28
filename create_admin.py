@@ -1,7 +1,5 @@
 from sqlmodel import Session
 from app.utils import bcrypt_context
-from sqlmodel import SQLModel
-from app.database import engine
 from app.modeles import Users
 import os
 from dotenv import load_dotenv, find_dotenv, set_key
@@ -16,9 +14,7 @@ API_PASSWORD = os.getenv("PASSWORD_API", None)
 
 
 def populate_db():
-
     with Session(engine) as session:
-        
         # Ajouter un utilisateur admin
         admin_user = Users(
             username=API_USER,
@@ -28,8 +24,7 @@ def populate_db():
         session.add(admin_user)
         session.commit()
         print("✅ Utilisateur admin ajouté avec succès")
-    
-if __name__ == "__main__" :
-    
+
+if __name__ == "__main__":
     SQLModel.metadata.create_all(engine)
     populate_db()
