@@ -1,12 +1,11 @@
 FROM python:3.11-slim
 
-
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install essential system dependencies, including ODBC support
+# Install essential system dependencies, including ODBC and MySQL support
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     gnupg \
@@ -20,6 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gpg \
     dirmngr \
     libgomp1 \
+    default-libmysqlclient-dev \
+    gcc \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Microsoft ODBC Driver 18 for SQL Server
@@ -46,12 +48,18 @@ RUN adduser \
 # Copier les dépendances Python
 COPY requirements.txt .
 
-# Installer les dépendances
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --no-cache-dir -r requirements.txt
+# Installer les dépendances - avec désactivation du cache pour éviter les problèmes
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir mysql-connector-python==8.2.0  # Installer explicitement mysql-connector-python
 
 # Copier le code source
 COPY . .
+
+COPY .env /app
+
+# Vérifier l'installation du module mysql pour le débogage
+RUN python -c "import mysql.connector; print('MySQL Connector installé avec succès')"
 
 # Utiliser l'utilisateur non privilégié
 USER appuser
@@ -59,6 +67,5 @@ USER appuser
 # Exposer le port utilisé par l'app
 EXPOSE 8086
 
-# CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8086", "--reload"]
+# CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8086"]
 ENTRYPOINT ["./entrypoint.sh"]
-

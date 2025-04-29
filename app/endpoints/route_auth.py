@@ -37,7 +37,7 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dep
     Note:
         Le token généré contient l'email, le nom de la banque et le rôle de l'utilisateur
     """
-    user = authenticate_user(email=form_data.username, password=form_data.password, db=db)
+    user = authenticate_user(username=form_data.username, password=form_data.password, db=db)
     if not user : 
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Nom d'utilisateur ou mot de passe incorrect, veuillez corriger votre saisie", headers={"WWW-Authenticate": "Bearer"})
     token_data = {

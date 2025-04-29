@@ -19,3 +19,6 @@ passlib==1.7.4
 pydantic[email]
 jose
 psycopg2-binary>=2.9.5
+mysqlclient
+mysql-connector-python==8.2.0
+

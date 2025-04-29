@@ -27,6 +27,7 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto") # pour hash
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="login")  # pour obtenir le token d'accès à l'API  
 
 
+
 db_dependency = Annotated[Session, Depends(db_connection)]   # dépendance pour la connexion à la BDD
 
 def create_access_token(data: dict, expires_delta : timedelta = None) -> str:
@@ -72,26 +73,14 @@ def get_password_hash(password : str) -> str:
     return bcrypt_context.hash(password)
 
 
-def authenticate_user(email : str, password : str, db : db_dependency) -> Users : 
+def authenticate_user(username: str, password: str, db: db_dependency) -> Users:
     """
-    Authentifie un utilisateur par email et mot de passe.
-
-    Args:
-        email (str): Email de l'utilisateur
-        password (str): Mot de passe en clair
-        db (Session): Session de base de données
-
-    Returns:
-        Users: Objet utilisateur si authentification réussie
-        False: Si authentification échouée
-
-    Note:
-        Vérifie le hash du mot de passe avec bcrypt
+    Authentifie un utilisateur par username OU email.
     """
-    user = db.query(Users).filter((Users.email == identifier) | (Users.username == identifier)).first()
-    if not user : 
+    user = db.query(Users).filter((Users.email == username) | (Users.username == username)).first()    
+    if not user:
         return False
-    if not bcrypt_context.verify(password, user.hashed_password) : 
+    if not bcrypt_context.verify(password, user.hashed_password):
         return False
     return user
 
