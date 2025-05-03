@@ -87,4 +87,6 @@ python create_admin.py
 * **Khadija Abdelmalek**: [GitHub](https://github.com/khadmalek)
 * **Khadija Aassi**: [GitHub](https://github.com/Khadaassi)
 
+Pour plus de détails sur le projet: [ML_recap](https://github.com/Khadaassi/Simplon_ML-Recap)
+
 Pour toute question ou amélioration, merci d’ouvrir une issue sur ce dépôt.
